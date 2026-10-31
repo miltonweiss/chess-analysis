@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --surface: #18181b;
+  --surface-muted: #111113;
+  --border: #27272a;
+  --accent: #e4e4e7;
+  --muted: #71717a;
+
+  /* Result semantics (match Tailwind emerald-400 / red-400 / zinc-400). */
+  --win: #34d399;
+  --loss: #f87171;
+  --draw: #a1a1aa;
+
+  /* Board palette, shared by the interactive and the thumbnail boards. */
+  --board-light: #ebecd0;
+  --board-dark: #779556;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-win: var(--win);
+  --color-loss: var(--loss);
+  --color-draw: var(--draw);
+  --color-board-light: var(--board-light);
+  --color-board-dark: var(--board-dark);
+  --font-sans: var(--font-satoshi);
+  --font-mono: var(--font-satoshi);
+  --radius-card: 0.75rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-satoshi), system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
