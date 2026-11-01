@@ -115,7 +115,7 @@ export function useGameAnalysis(
     setError(null);
     const initialProgress: GameAnalysisProgress = {
       current: 0,
-      total: moves.length + 1,
+      total: moves.length * 2,
       currentPly: 0,
       currentColor: "white",
       currentMove: 0,

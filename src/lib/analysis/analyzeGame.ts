@@ -40,7 +40,7 @@ function reportProgress(
   },
   moves: ChessMove[],
 ): void {
-  const total = moves.length + 1;
+  const total = moves.length * 2;
   options.onProgress?.({
     current: partial.current,
     total,
@@ -211,7 +211,7 @@ export async function analyzeGame(
   reportProgress(
     options,
     {
-      current: moves.length + 1,
+      current: moves.length * 2,
       currentPly: moves[moves.length - 1]?.ply ?? 0,
       currentColor: moves[moves.length - 1]?.color ?? "white",
       currentMove: moves.length,

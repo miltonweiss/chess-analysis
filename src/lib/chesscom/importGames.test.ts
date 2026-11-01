@@ -158,7 +158,9 @@ describe("importChessComGames", () => {
       key: "chess.com:cara",
       username: "cara",
       lastSyncedAt: "2024-04-10T12:00:00.000Z",
-      archives: {},
+      archives: {
+        "https://api.chess.com/pub/player/cara/games/2024/01": {},
+      },
     });
 
     await importChessComGames({ username: "Cara", client });
@@ -190,6 +192,19 @@ describe("selectArchiveUrls", () => {
       "https://api.chess.com/pub/player/a/games/2024/04",
       "https://api.chess.com/pub/player/a/games/2024/03",
       "https://api.chess.com/pub/player/a/games/2024/02",
+    ]);
+  });
+
+  it("also fetches older archive months that have never synced", () => {
+    expect(
+      selectArchiveUrls(urls, "2024-04-20T00:00:00.000Z", {
+        [urls[0]]: {},
+        [urls[1]]: {},
+        [urls[2]]: {},
+      }),
+    ).toEqual([
+      "https://api.chess.com/pub/player/a/games/2024/04",
+      "https://api.chess.com/pub/player/a/games/2024/01",
     ]);
   });
 });

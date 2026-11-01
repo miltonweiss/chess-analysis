@@ -49,13 +49,15 @@ function compareYearMonth(a: YearMonth, b: YearMonth): number {
 
 /**
  * Incremental archive window: fetch the month of lastSyncedAt through the
- * current month. A fetch last week only hits this month; one from 3 months
- * ago hits those three plus the current month. First sync (no timestamp)
- * fetches every archive.
+ * current month, plus any archive month that has no successful sync metadata.
+ * A fetch last week only hits this month unless an older month is missing;
+ * one from 3 months ago hits those three plus the current month. First sync
+ * (no timestamp) fetches every archive.
  */
 export function selectArchiveUrls(
   archiveUrlsNewestFirst: string[],
   lastSyncedAt: string | undefined,
+  archiveMeta?: Record<string, ArchiveSyncMeta>,
 ): string[] {
   if (archiveUrlsNewestFirst.length === 0) {
     return [];
@@ -75,20 +77,23 @@ export function selectArchiveUrls(
     month: synced.getUTCMonth() + 1,
   };
 
-  const inWindow = archiveUrlsNewestFirst.filter((url) => {
-    const ym = parseArchiveYearMonth(url);
-    if (!ym) {
-      return true;
-    }
-    return compareYearMonth(ym, cutoff) >= 0;
-  });
+  const requiredUrls = new Set(
+    archiveUrlsNewestFirst.filter((url) => {
+      const ym = parseArchiveYearMonth(url);
+      if (!ym) {
+        return true;
+      }
+      return compareYearMonth(ym, cutoff) >= 0 || Boolean(archiveMeta && !archiveMeta[url]);
+    }),
+  );
 
+  const archiveUrls = archiveUrlsNewestFirst.filter((url) => requiredUrls.has(url));
   const newest = archiveUrlsNewestFirst[0];
-  if (newest && !inWindow.includes(newest)) {
-    return [newest, ...inWindow];
+  if (newest && !requiredUrls.has(newest)) {
+    return [newest, ...archiveUrls];
   }
 
-  return inWindow;
+  return archiveUrls;
 }
 
 export async function importChessComGames(
@@ -160,7 +165,11 @@ export async function importChessComGames(
     ? Object.keys(archiveMeta).sort()
     : [...archivesResult.data.archives];
   const archiveUrlsNewestFirst = [...allArchiveUrls].reverse();
-  const archiveUrls = selectArchiveUrls(archiveUrlsNewestFirst, priorSync?.lastSyncedAt);
+  const archiveUrls = selectArchiveUrls(
+    archiveUrlsNewestFirst,
+    priorSync?.lastSyncedAt,
+    archiveMeta,
+  );
 
   for (let index = 0; index < archiveUrls.length; index += 1) {
     if (signal?.aborted) {

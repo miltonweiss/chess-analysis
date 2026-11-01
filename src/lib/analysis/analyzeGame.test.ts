@@ -114,6 +114,10 @@ describe("analyzeGame", () => {
     expect(onProgress.mock.calls.length).toBeGreaterThan(0);
     expect(engine.analyze).toHaveBeenCalledTimes(5);
     expect(result.moves).toHaveLength(4);
+
+    const reportedProgress = onProgress.mock.calls.map(([progress]) => progress);
+    expect(reportedProgress.every((progress) => progress.current <= progress.total)).toBe(true);
+    expect(reportedProgress.at(-1)).toMatchObject({ current: 8, total: 8 });
   });
 
   it("reuses cache so fenBefore of move N hits fenAfter of move N-1", async () => {

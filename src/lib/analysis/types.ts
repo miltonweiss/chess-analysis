@@ -58,9 +58,9 @@ export type GameAnalysis = {
 };
 
 export type GameAnalysisProgress = {
-  /** Completed unique positions analyzed (0..total). */
+  /** Completed position-evaluation steps (0..total). */
   current: number;
-  /** Total unique positions = moves.length + 1. */
+  /** Each move compares the position immediately before and after it. */
   total: number;
   currentPly: number;
   currentColor: PlayerColor;

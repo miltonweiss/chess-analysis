@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { SimpleAnalysis } from "@/components/analysis/SimpleAnalysis";
+import { useAutomaticChessComSync } from "@/hooks/useAutomaticChessComSync";
 import { useStoredGame } from "@/hooks/useStoredGame";
 import type { StoredGame } from "@/lib/games/types";
 import { listGames } from "@/lib/storage/gameRepository";
@@ -64,11 +65,12 @@ function Loading() {
 export function AnalyzePageClient() {
   const searchParams = useSearchParams();
   const requestedId = searchParams.get("game");
-  const latest = useLatestGameId(!requestedId);
+  const sync = useAutomaticChessComSync();
+  const latest = useLatestGameId(!requestedId && sync.isReady);
   const gameId = requestedId ?? (latest.type === "ready" ? latest.id : undefined);
   const stored = useStoredGame(gameId);
 
-  if (!requestedId && (latest.type === "loading" || latest.type === "idle")) {
+  if (!requestedId && (!sync.isReady || latest.type === "loading" || latest.type === "idle")) {
     return <Loading />;
   }
 
